@@ -1092,6 +1092,7 @@ mrb_uv_ip4addr_sin_port(mrb_state *mrb, mrb_value self)
   return mrb_fixnum_value(htons(addr->sin_port));
 }
 
+#if 0
 /*********************************************************
  * UV::Ip6Addr
  *********************************************************/
@@ -1194,6 +1195,7 @@ mrb_uv_ip6addr_sin_port(mrb_state *mrb, mrb_value self)
   Data_Get_Struct(mrb, value_addr, &uv_ip6addr_type, addr);
   return mrb_fixnum_value(htons(addr->sin6_port));
 }
+#endif
 
 /*********************************************************
  * UV::Addrinfo
@@ -1345,6 +1347,7 @@ mrb_uv_addrinfo_addr(mrb_state *mrb, mrb_value self)
       c = mrb_obj_new(mrb, _class_uv_ip4addr, 1, args);
     }
     break;
+#if 0
   case AF_INET6:
     {
       struct RClass* _class_uv_ip6addr = mrb_class_ptr(mrb_const_get(
@@ -1360,6 +1363,7 @@ mrb_uv_addrinfo_addr(mrb_state *mrb, mrb_value self)
       c = mrb_obj_new(mrb, _class_uv_ip6addr, 1, args);
     }
     break;
+#endif
   }
   return c;
 }
@@ -1470,9 +1474,11 @@ mrb_uv_tcp_connect(mrb_state *mrb, mrb_value self, int version)
   if (version == 4) {
     Data_Get_Struct(mrb, value_addr, &uv_ip4addr_type, addr);
   }
+#if 0
   else {
     Data_Get_Struct(mrb, value_addr, &uv_ip6addr_type, addr);
   }
+#endif
   if (!addr) {
     mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid argument");
   }
@@ -1540,9 +1546,11 @@ mrb_uv_tcp_bind(mrb_state *mrb, mrb_value self, int version)
   if (version == 4) {
     Data_Get_Struct(mrb, value_addr, &uv_ip4addr_type, addr);
   }
+#if 0
   else {
     Data_Get_Struct(mrb, value_addr, &uv_ip6addr_type, addr);
   }
+#endif
   if (!addr) {
     mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid argument");
   }
@@ -1798,9 +1806,11 @@ mrb_uv_udp_bind(mrb_state *mrb, mrb_value self, int version)
   if (version == 4) {
     Data_Get_Struct(mrb, value_addr, &uv_ip4addr_type, addr);
   }
+#if 0
   else {
     Data_Get_Struct(mrb, value_addr, &uv_ip6addr_type, addr);
   }
+#endif
   if (!addr) {
     mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid argument");
   }
@@ -1874,9 +1884,11 @@ mrb_uv_udp_send(mrb_state *mrb, mrb_value self, int version)
   if (version == 4) {
     Data_Get_Struct(mrb, value_addr, &uv_ip4addr_type, addr);
   }
+#if 0
   else {
     Data_Get_Struct(mrb, value_addr, &uv_ip6addr_type, addr);
   }
+#endif
   if (!addr) {
     mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid argument");
   }
@@ -1941,12 +1953,14 @@ _uv_udp_recv_cb(uv_udp_t* handle, ssize_t nread, uv_buf_t buf, struct sockaddr* 
         data = Data_Wrap_Struct(mrb, mrb->object_class,
             &uv_ip4addr_nofree_type, (void *) addr);
         break;
+#if 0
       case AF_INET6:
         /* IPv6 */
         _class_uv_ipaddr = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(_class_uv), mrb_intern(mrb, "Ip6Addr")));
         data = Data_Wrap_Struct(mrb, mrb->object_class,
             &uv_ip6addr_nofree_type, (void *) addr);
         break;
+#endif
 
       default:
         /* Non-IP */
@@ -3684,7 +3698,9 @@ mrb_mruby_uv_gem_init(mrb_state* mrb) {
   struct RClass* _class_uv_prepare;
   struct RClass* _class_uv_addrinfo;
   struct RClass* _class_uv_ip4addr;
+#if 0
   struct RClass* _class_uv_ip6addr;
+#endif
   struct RClass* _class_uv_tcp;
   struct RClass* _class_uv_udp;
   struct RClass* _class_uv_pipe;
@@ -3703,7 +3719,9 @@ mrb_mruby_uv_gem_init(mrb_state* mrb) {
   //mrb_define_module_function(mrb, _class_uv, "once", mrb_uv_once, ARGS_NONE());
   mrb_define_module_function(mrb, _class_uv, "default_loop", mrb_uv_default_loop, ARGS_NONE());
   mrb_define_module_function(mrb, _class_uv, "ip4_addr", mrb_uv_ip4_addr, ARGS_REQ(2));
+#if 0
   mrb_define_module_function(mrb, _class_uv, "ip6_addr", mrb_uv_ip6_addr, ARGS_REQ(2));
+#endif
   mrb_define_module_function(mrb, _class_uv, "getaddrinfo", mrb_uv_getaddrinfo, ARGS_REQ(3));
   mrb_define_module_function(mrb, _class_uv, "gc", mrb_uv_gc, ARGS_NONE());
 
@@ -3786,12 +3804,14 @@ mrb_mruby_uv_gem_init(mrb_state* mrb) {
   mrb_define_method(mrb, _class_uv_ip4addr, "sin_port", mrb_uv_ip4addr_sin_port, ARGS_NONE());
   mrb_gc_arena_restore(mrb, ai);
 
+#if 0
   _class_uv_ip6addr = mrb_define_class_under(mrb, _class_uv, "Ip6Addr", mrb->object_class);
   mrb_define_method(mrb, _class_uv_ip6addr, "initialize", mrb_uv_ip6addr_init, ARGS_REQ(1) | ARGS_OPT(1));
   mrb_define_method(mrb, _class_uv_ip6addr, "to_s", mrb_uv_ip6addr_to_s, ARGS_NONE());
   mrb_define_method(mrb, _class_uv_ip6addr, "sin_addr", mrb_uv_ip6addr_sin_addr, ARGS_NONE());
   mrb_define_method(mrb, _class_uv_ip6addr, "sin_port", mrb_uv_ip6addr_sin_port, ARGS_NONE());
   mrb_gc_arena_restore(mrb, ai);
+#endif
 
   _class_uv_tcp = mrb_define_class_under(mrb, _class_uv, "TCP", mrb->object_class);
   mrb_define_method(mrb, _class_uv_tcp, "initialize", mrb_uv_tcp_init, ARGS_NONE());
